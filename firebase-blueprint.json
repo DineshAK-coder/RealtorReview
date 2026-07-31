@@ -1,0 +1,229 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Tenant or Property Owner profile information",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique Firebase Auth user ID",
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address",
+          "maxLength": 256
+        },
+        "isOwner": {
+          "type": "boolean",
+          "description": "Whether user is a landlord or property manager"
+        },
+        "hasAcceptedGuidelines": {
+          "type": "boolean",
+          "description": "Has accepted tenant review guidelines"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp",
+          "maxLength": 64
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Rental property listing",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Property name",
+          "maxLength": 150,
+          "minLength": 2
+        },
+        "locality": {
+          "type": "string",
+          "description": "Locality or area",
+          "maxLength": 150
+        },
+        "city": {
+          "type": "string",
+          "description": "City name",
+          "maxLength": 100
+        },
+        "type": {
+          "type": "string",
+          "description": "Property type",
+          "enum": ["Apartment", "House", "PG", "Commercial"]
+        },
+        "avgRating": {
+          "type": "number",
+          "description": "Average star rating 1-5"
+        },
+        "ratingsCount": {
+          "type": "number",
+          "description": "Total review count"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Property image URL",
+          "maxLength": 512
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Optional owner UID",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation ISO timestamp",
+          "maxLength": 64
+        }
+      },
+      "required": ["name", "city", "locality", "type"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Tenant review for a property",
+      "type": "object",
+      "properties": {
+        "propertyId": {
+          "type": "string",
+          "description": "Target property ID",
+          "maxLength": 128
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Author user ID",
+          "maxLength": 128
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Author display handle",
+          "maxLength": 100
+        },
+        "rating": {
+          "type": "number",
+          "description": "Overall star rating 1-5"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Review text details",
+          "maxLength": 3000
+        },
+        "isVerifiedTenant": {
+          "type": "boolean",
+          "description": "Verified status"
+        },
+        "isFirsthand": {
+          "type": "boolean",
+          "description": "Firsthand tenancy confirmation"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp",
+          "maxLength": 64
+        }
+      },
+      "required": ["propertyId", "authorUid", "rating", "comment"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "Report on a review",
+      "type": "object",
+      "properties": {
+        "reviewId": {
+          "type": "string",
+          "description": "Target review ID",
+          "maxLength": 128
+        },
+        "propertyId": {
+          "type": "string",
+          "description": "Property ID",
+          "maxLength": 128
+        },
+        "reporterUid": {
+          "type": "string",
+          "description": "Reporter UID",
+          "maxLength": 128
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for reporting",
+          "maxLength": 200
+        },
+        "details": {
+          "type": "string",
+          "description": "Report details",
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "description": "Report status",
+          "enum": ["pending", "reviewed", "dismissed"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp",
+          "maxLength": 64
+        }
+      },
+      "required": ["reviewId", "reporterUid", "reason"]
+    },
+    "SavedProperty": {
+      "title": "Saved Property",
+      "description": "User bookmarked property",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User UID",
+          "maxLength": 128
+        },
+        "propertyId": {
+          "type": "string",
+          "description": "Property ID",
+          "maxLength": 128
+        },
+        "savedAt": {
+          "type": "string",
+          "description": "ISO timestamp",
+          "maxLength": 64
+        },
+        "hasNewReview": {
+          "type": "boolean",
+          "description": "New review notification flag"
+        }
+      },
+      "required": ["userId", "propertyId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles collection"
+    },
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Rental properties collection"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Tenant reviews collection"
+    },
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Review flag reports collection"
+    },
+    "/savedProperties/{savedId}": {
+      "schema": "SavedProperty",
+      "description": "User property watchlists collection"
+    }
+  }
+}

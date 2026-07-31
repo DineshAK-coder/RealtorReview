@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Collection Rules
+
+    // Users collection
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      allow create, update: if isValidId(userId);
+      allow delete: if false;
+      allow list: if false;
+    }
+
+    // Properties collection (public read, create/update for all users)
+    match /properties/{propertyId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(propertyId);
+      allow delete: if false;
+    }
+
+    // Reviews collection (public read, create & update for all users)
+    match /reviews/{reviewId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(reviewId);
+      allow delete: if isSignedIn() && isValidId(reviewId) && existing().authorUid == request.auth.uid;
+    }
+
+    // Reports collection (public create & read)
+    match /reports/{reportId} {
+      allow get, list: if true;
+      allow create: if isValidId(reportId);
+      allow update, delete: if false;
+    }
+
+    // SavedProperties collection (read & write for all)
+    match /savedProperties/{savedId} {
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(savedId);
+    }
+  }
+}
+

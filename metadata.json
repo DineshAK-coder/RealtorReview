@@ -1,0 +1,6 @@
+{
+  "name": "RealtorReview",
+  "description": "Tenant review platform for rental properties in India with fact-based tenant ratings, sub-category scores, verified owner responses, and watchlists.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
